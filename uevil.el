@@ -19,29 +19,31 @@
 ;;
 ;;; Code:
 
-(defvar uevil-normal-map (make-sparse-keymap))
-(defvar uevil-insert-map (make-sparse-keymap))
+(defvar uevil-normal-map (make-sparse-keymap)
+  "The keymap of normal state.")
+(defvar uevil-insert-map (make-sparse-keymap)
+  "The keymap of insert state.")
+(defvar uevil-insert-state-p nil
+  "Check if uevil is in insert state.")
+(defvar uevil-normal-state-p nil
+  "Check if uevil is in normal state.")
 
 ;;; States:
 
 ;; Normal state:
-(defvar uevil-normal-state-p t
-  "Check if uevil is in normal state.")
-
 (defun uevil-normal-state ()
   "Set up the uevil normal state AKA \"command state\"."
   (unless uevil-normal-state-p
     (use-local-map uevil-normal-map)
     (read-only-mode)
+    (setq uevil-insert-state-p nil)
     (setq uevil-normal-state-p t)))
 
 ;; Insert state:
-(defvar uevil-insert-state-p t
-  "Check if uevil is in insert state.")
-
 (defun uevil-insert-state ()
   "Set up the uevil insert state."
   (unless uevil-insert-state-p
+    (use-local-map uevil-insert-map)
     (read-only-mode)
     (setq uevil-insert-state-p t)
     (setq uevil-normal-state-p nil)))
@@ -54,5 +56,11 @@
 ;; Insert state:
 (define-key uevil-insert-map [escape] 'uevil-normal-state)
 
-(provide 'uevil)
+;;; Main function:
+(define-minor-mode uevil-mode
+  "A major mode to provide vi-like keybindings."
+  :lighter uevil
+  (uevil-normal-state))
+
+(provide 'uevil-mode)
 ;;; uevil.el ends here
