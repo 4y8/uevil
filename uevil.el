@@ -33,6 +33,8 @@
 ;; Normal state:
 (defun uevil-normal-state ()
   "Set up the uevil normal state AKA \"command state\"."
+  (interactive)
+  (message "hello")
   (unless uevil-normal-state-p
     (use-local-map uevil-normal-map)
     (read-only-mode)
@@ -42,9 +44,10 @@
 ;; Insert state:
 (defun uevil-insert-state ()
   "Set up the uevil insert state."
+  (interactive)
   (unless uevil-insert-state-p
+    (read-only-mode -1)
     (use-local-map uevil-insert-map)
-    (read-only-mode)
     (setq uevil-insert-state-p t)
     (setq uevil-normal-state-p nil)))
 
@@ -54,7 +57,7 @@
 (define-key uevil-normal-map "i" 'uevil-insert-state)
 
 ;; Insert state:
-(define-key uevil-insert-map [escape] 'uevil-normal-state)
+(define-key uevil-insert-map (kbd "<escape>") 'uevil-normal-state)
 
 ;;; Main function:
 (define-minor-mode uevil-mode
