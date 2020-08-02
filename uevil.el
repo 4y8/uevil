@@ -37,10 +37,25 @@
   (delete-char 1)
   (read-only-mode))
 
+(defun uevil-delete-line ()
+  "Delete the current line."
+  (interactive)
+  (read-only-mode -1)
+  (kill-whole-line)
+  (read-only-mode))
+
 (defun uevil-backward-line ()
   "Go on the line before the current line."
   (interactive)
   (forward-line -1))
+
+(defun uevil-end-of-buffer ()
+  "Go to the end of the buffer."
+  (goto-char (point-max)))
+
+(defun uevil-beginning-of-buffer ()
+  "Go to the beginning of the buffer."
+  (goto-char (point-min)))
 
 ;;; States:
 
@@ -68,12 +83,20 @@
 
 ;; Normal state
 (define-key uevil-normal-map "i" 'uevil-insert-state)
+
 ;; Movements
-(define-key uevil-normal-map "h" 'backward-char)
-(define-key uevil-normal-map "l" 'forward-char)
-(define-key uevil-normal-map "j" 'forward-line)
-(define-key uevil-normal-map "k" 'uevil-backward-line)
-(define-key uevil-normal-map "x" 'uevil-suppr)
+(define-key uevil-normal-map "h"  'backward-char)
+(define-key uevil-normal-map "l"  'forward-char)
+(define-key uevil-normal-map "j"  'forward-line)
+(define-key uevil-normal-map "k"  'uevil-backward-line)
+(define-key uevil-normal-map "w"  'forward-word)
+(define-key uevil-normal-map "b"  'backward-word)
+(define-key uevil-normal-map "gg" 'uevil-beginning-of-buffer)
+(define-key uevil-normal-map "G"  'uevil-end-of-buffer)
+
+;; Deletion
+(define-key uevil-normal-map "x"  'uevil-suppr)
+(define-key uevil-normal-map "dd" 'uevil-delete-line)
 
 ;; Insert state
 (define-key uevil-insert-map (kbd "ESC") 'uevil-normal-state)
