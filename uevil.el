@@ -114,7 +114,15 @@
 
 (defun uevil-paste ()
   "Paste from the kill ring to the buffer."
-  (yank))
+  (interactive)
+  (read-only-mode -1)
+  (yank)
+  (read-only-mode))
+
+(defun uevil-undo ()
+  "Undo."
+  (interactive)
+  (undo))
 
 ;; Movements
 (defun uevil-beginning-of-buffer ()
@@ -169,7 +177,7 @@
 ;; Copy and paste
 (define-key uevil-normal-map "p" 'uevil-paste)
 (define-key uevil-normal-map "Y" 'uevil-yank-line)
-
+(define-key uevil-normal-map "u" 'uevil-undo)
 
 ;; Movements
 (define-key uevil-normal-map "h"  'backward-char)
@@ -194,7 +202,7 @@
 
 ;;; Main function
 (define-minor-mode uevil-mode
-  "A major mode to provide vi-like keybindings."
+  "A minor mode to provide vi-like keybindings."
   :lighter uevil
   (uevil-normal-state))
 
