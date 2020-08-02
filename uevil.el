@@ -30,18 +30,17 @@
 
 ;;; States:
 
-;; Normal state:
+;; Normal state
 (defun uevil-normal-state ()
   "Set up the uevil normal state AKA \"command state\"."
   (interactive)
-  (message "hello")
   (unless uevil-normal-state-p
     (use-local-map uevil-normal-map)
     (read-only-mode)
     (setq uevil-insert-state-p nil)
     (setq uevil-normal-state-p t)))
 
-;; Insert state:
+;; Insert state
 (defun uevil-insert-state ()
   "Set up the uevil insert state."
   (interactive)
@@ -53,13 +52,18 @@
 
 ;;; Keymaps:
 
-;; Normal state:
+;; Normal state
 (define-key uevil-normal-map "i" 'uevil-insert-state)
+;; Movements
+(define-key uevil-normal-map "h" 'backward-char)
+(define-key uevil-normal-map "l" 'forward-char)
+(define-key uevil-normal-map "j" 'forward-line)
+(define-key uevil-normal-map "k" '(lambda () (interactive) (forward-line -1)))
 
-;; Insert state:
-(define-key uevil-insert-map (kbd "<escape>") 'uevil-normal-state)
+;; Insert state
+(define-key uevil-insert-map (kbd "ESC") 'uevil-normal-state)
 
-;;; Main function:
+;;; Main function
 (define-minor-mode uevil-mode
   "A major mode to provide vi-like keybindings."
   :lighter uevil
