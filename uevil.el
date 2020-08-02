@@ -41,12 +41,62 @@
     (kill-buffer))
    (t (message "Unknown command: '%s'" in))))
 
+;;; States:
+
+;; Normal state
+(defun uevil-normal-state ()
+  "Set up the uevil normal state AKA \"command state\"."
+  (interactive)
+  (unless uevil-normal-state-p
+    (use-local-map uevil-normal-map)
+    (read-only-mode)
+    (setq uevil-insert-state-p nil)
+    (setq uevil-normal-state-p t)))
+
+;; Insert state
+(defun uevil-insert-state ()
+  "Set up the uevil insert state."
+  (interactive)
+  (unless uevil-insert-state-p
+    (read-only-mode -1)
+    (use-local-map uevil-insert-map)
+    (setq uevil-insert-state-p t)
+    (setq uevil-normal-state-p nil)))
+
 ;;; Utils:
+
+;; State changes
+(defun uevil-append ()
+  "Enter insertion mode after the current cursor."
+  (interactive)
+  (forward-char)
+  (uevil-insert-state))
+
+(defun uevil-insert-beginning-line ()
+  "Enter insertion mode at the beginning of the line."
+  (interactive)
+  (beginning-of-line)
+  (uevil-insert-state))
+
+(defun uevil-insert-end-line ()
+  "Enter insertion mode at the end of the line."
+  (interactive)
+  (end-of-line)
+  (uevil-insert-state))
+
+;; Text deletion
 (defun uevil-suppr ()
   "Delete the character next to the cursor."
   (interactive)
   (read-only-mode -1)
   (delete-char 1)
+  (read-only-mode))
+
+(defun uevil-suppr-before ()
+  "Delete the character next to the cursor."
+  (interactive)
+  (read-only-mode -1)
+  (delete-char -1)
   (read-only-mode))
 
 (defun uevil-delete-line ()
@@ -56,6 +106,17 @@
   (kill-whole-line)
   (read-only-mode))
 
+;; Copy and paste
+(defun uevil-yank-line ()
+  "Copy the line to the kill ring."
+  (interactive)
+  (copy-region-as-kill (line-beginning-position) (line-end-position)))
+
+(defun uevil-paste ()
+  "Paste from the kill ring to the buffer."
+  (yank))
+
+;; Movements
 (defun uevil-beginning-of-buffer ()
   "Go to the beginning of the buffer."
   (interactive)
@@ -94,33 +155,21 @@
     (forward-line -1)
     (forward-char (min pos (uevil-line-length)))))
 
-;;; States:
-
-;; Normal state
-(defun uevil-normal-state ()
-  "Set up the uevil normal state AKA \"command state\"."
-  (interactive)
-  (unless uevil-normal-state-p
-    (use-local-map uevil-normal-map)
-    (read-only-mode)
-    (setq uevil-insert-state-p nil)
-    (setq uevil-normal-state-p t)))
-
-;; Insert state
-(defun uevil-insert-state ()
-  "Set up the uevil insert state."
-  (interactive)
-  (unless uevil-insert-state-p
-    (read-only-mode -1)
-    (use-local-map uevil-insert-map)
-    (setq uevil-insert-state-p t)
-    (setq uevil-normal-state-p nil)))
 
 ;;; Keymaps:
 
 ;; Normal state
+;  Switch states
 (define-key uevil-normal-map "i" 'uevil-insert-state)
 (define-key uevil-normal-map ":" 'uevil-ex)
+(define-key uevil-normal-map "a" 'uevil-append)
+(define-key uevil-normal-map "I" 'uevil-insert-beginning-line)
+(define-key uevil-normal-map "A" 'uevil-insert-end-line)
+
+;; Copy and paste
+(define-key uevil-normal-map "p" 'uevil-paste)
+(define-key uevil-normal-map "Y" 'uevil-yank-line)
+
 
 ;; Movements
 (define-key uevil-normal-map "h"  'backward-char)
@@ -137,6 +186,7 @@
 
 ;; Deletion
 (define-key uevil-normal-map "x"  'uevil-suppr)
+(define-key uevil-normal-map "X"  'uevil-suppr-before)
 (define-key uevil-normal-map "dd" 'uevil-delete-line)
 
 ;; Insert state
