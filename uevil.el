@@ -19,6 +19,7 @@
 ;;
 ;;; Code:
 
+;;; Global variables:
 (defvar uevil-normal-map (make-sparse-keymap)
   "The keymap of normal state.")
 (defvar uevil-insert-map (make-sparse-keymap)
@@ -27,6 +28,19 @@
   "Check if uevil is in insert state.")
 (defvar uevil-normal-state-p nil
   "Check if uevil is in normal state.")
+
+;;; Utils:
+(defun uevil-suppr ()
+  "Delete the character next to the cursor."
+  (interactive)
+  (read-only-mode -1)
+  (delete-char 1)
+  (read-only-mode))
+
+(defun uevil-backward-line ()
+  "Go on the line before the current line."
+  (interactive)
+  (forward-line -1))
 
 ;;; States:
 
@@ -58,7 +72,8 @@
 (define-key uevil-normal-map "h" 'backward-char)
 (define-key uevil-normal-map "l" 'forward-char)
 (define-key uevil-normal-map "j" 'forward-line)
-(define-key uevil-normal-map "k" '(lambda () (interactive) (forward-line -1)))
+(define-key uevil-normal-map "k" 'uevil-backward-line)
+(define-key uevil-normal-map "x" 'uevil-suppr)
 
 ;; Insert state
 (define-key uevil-insert-map (kbd "ESC") 'uevil-normal-state)
