@@ -49,13 +49,29 @@
   (interactive)
   (forward-line -1))
 
-(defun uevil-end-of-buffer ()
-  "Go to the end of the buffer."
-  (goto-char (point-max)))
-
 (defun uevil-beginning-of-buffer ()
   "Go to the beginning of the buffer."
+  (interactive)
   (goto-char (point-min)))
+
+(defun uevil-end-of-buffer ()
+  "Go to the end of the buffer."
+  (interactive)
+  (goto-char (point-max)))
+
+(defun uevil-beginning-of-line ()
+  "Go to the beginning of the line."
+  (interactive)
+  (beginning-of-line))
+
+(defun uevil-end-of-line ()
+  "Go to the end the line."
+  (interactive)
+  (end-of-line))
+
+(defun uevil-line-length ()
+  "Return the length of the current line."
+  (- (line-end-position) (line-beginning-position)))
 
 ;;; States:
 
@@ -93,6 +109,8 @@
 (define-key uevil-normal-map "b"  'backward-word)
 (define-key uevil-normal-map "gg" 'uevil-beginning-of-buffer)
 (define-key uevil-normal-map "G"  'uevil-end-of-buffer)
+(define-key uevil-normal-map "0"  'uevil-beginning-of-line)
+(define-key uevil-normal-map "$"  'uevil-end-of-line)
 
 ;; Deletion
 (define-key uevil-normal-map "x"  'uevil-suppr)
