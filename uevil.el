@@ -1,4 +1,4 @@
-;;; uevil.el --- A minimal implementation of vi emulation in emacs -*- lexical-binding: t; -*-
+;;; uevil.el --- a minimal implementation of vi emulation in emacs -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2020 Yul3n
 ;;
@@ -29,6 +29,18 @@
 (defvar uevil-normal-state-p nil
   "Check if uevil is in normal state.")
 
+;;; Ex:
+(defun uevil-ex (in)
+  "Run uevil ex prompt on the input as IN."
+  (interactive "s: ")
+  (cond
+   ((string= in "w") (save-buffer))
+   ((string= in "q") (kill-buffer))
+   ((string= in "wq")
+    (save-buffer)
+    (kill-buffer))
+   (t (message "Unknown command: '%s'" in))))
+
 ;;; Utils:
 (defun uevil-suppr ()
   "Delete the character next to the cursor."
@@ -43,11 +55,6 @@
   (read-only-mode -1)
   (kill-whole-line)
   (read-only-mode))
-
-(defun uevil-backward-line ()
-  "Go on the line before the current line."
-  (interactive)
-  (forward-line -1))
 
 (defun uevil-beginning-of-buffer ()
   "Go to the beginning of the buffer."
@@ -72,6 +79,20 @@
 (defun uevil-line-length ()
   "Return the length of the current line."
   (- (line-end-position) (line-beginning-position)))
+
+(defun uevil-forward-line ()
+  "Go to the next line."
+  (interactive)
+  (let ((pos (- (point) (line-beginning-position))))
+    (forward-line 1)
+    (forward-char (min pos (uevil-line-length)))))
+
+(defun uevil-backward-line ()
+  "Go to the previous line."
+  (interactive)
+  (let ((pos (- (point) (line-beginning-position))))
+    (forward-line -1)
+    (forward-char (min pos (uevil-line-length)))))
 
 ;;; States:
 
@@ -99,11 +120,12 @@
 
 ;; Normal state
 (define-key uevil-normal-map "i" 'uevil-insert-state)
+(define-key uevil-normal-map ":" 'uevil-ex)
 
 ;; Movements
 (define-key uevil-normal-map "h"  'backward-char)
 (define-key uevil-normal-map "l"  'forward-char)
-(define-key uevil-normal-map "j"  'forward-line)
+(define-key uevil-normal-map "j"  'uevil-forward-line)
 (define-key uevil-normal-map "k"  'uevil-backward-line)
 (define-key uevil-normal-map "w"  'forward-word)
 (define-key uevil-normal-map "b"  'backward-word)
@@ -111,6 +133,7 @@
 (define-key uevil-normal-map "G"  'uevil-end-of-buffer)
 (define-key uevil-normal-map "0"  'uevil-beginning-of-line)
 (define-key uevil-normal-map "$"  'uevil-end-of-line)
+(define-key uevil-normal-map (kbd "DEL") 'backward-char)
 
 ;; Deletion
 (define-key uevil-normal-map "x"  'uevil-suppr)
