@@ -24,10 +24,14 @@
   "The keymap of normal state.")
 (defvar uevil-insert-map (make-sparse-keymap)
   "The keymap of insert state.")
-(defvar uevil-insert-state-p nil
-  "Check if uevil is in insert state.")
+(defvar uevil-visual-map (make-sparse-keymap)
+  "The keymap of visual state.")
 (defvar uevil-normal-state-p nil
   "Check if uevil is in normal state.")
+(defvar uevil-insert-state-p nil
+  "Check if uevil is in insert state.")
+(defvar uevil-visual-state-p nil
+  "Check if uevil is in visual state.")
 
 ;;; Ex:
 (defun uevil-ex (in)
@@ -67,21 +71,31 @@
 
 ;; State changes
 (defun uevil-append ()
-  "Enter insertion mode after the current cursor."
+  "Enter insert state after the current cursor."
   (interactive)
   (forward-char)
   (uevil-insert-state))
 
 (defun uevil-insert-beginning-line ()
-  "Enter insertion mode at the beginning of the line."
+  "Enter insert state at the beginning of the line."
   (interactive)
   (beginning-of-line)
   (uevil-insert-state))
 
 (defun uevil-insert-end-line ()
-  "Enter insertion mode at the end of the line."
+  "Enter in insert state at the end of the line."
   (interactive)
   (end-of-line)
+  (uevil-insert-state))
+
+(defun uevil-insert-new-line ()
+  "Enter insert state on a new line."
+  (interactive)
+  (end-of-line)
+  (read-only-mode -1)
+  (insert "
+")
+  (read-only-mode)
   (uevil-insert-state))
 
 ;; Text deletion
@@ -163,6 +177,15 @@
     (forward-line -1)
     (forward-char (min pos (uevil-line-length)))))
 
+(defun uevil-forward-char ()
+  "Go to the next character."
+  (interactive)
+  (forward-char))
+
+(defun uevil-backward-char ()
+  "Go to the previous character."
+  (interactive)
+  (backward-char))
 
 ;;; Keymaps:
 
@@ -173,6 +196,7 @@
 (define-key uevil-normal-map "a" 'uevil-append)
 (define-key uevil-normal-map "I" 'uevil-insert-beginning-line)
 (define-key uevil-normal-map "A" 'uevil-insert-end-line)
+(define-key uevil-normal-map "o" 'uevil-insert-new-line)
 
 ;; Copy and paste
 (define-key uevil-normal-map "p" 'uevil-paste)
@@ -190,15 +214,22 @@
 (define-key uevil-normal-map "G"  'uevil-end-of-buffer)
 (define-key uevil-normal-map "0"  'uevil-beginning-of-line)
 (define-key uevil-normal-map "$"  'uevil-end-of-line)
-(define-key uevil-normal-map (kbd "DEL") 'backward-char)
-
+(define-key uevil-normal-map (kbd "DEL")     'backward-char)
+(define-key uevil-normal-map (kbd "<right>") 'forward-char)
+(define-key uevil-normal-map (kbd "<left>")  'backward-char)
+(define-key uevil-normal-map (kbd "<down>")  'uevil-forward-line)
+(define-key uevil-normal-map (kbd "<up>")    'uevil-backward-line)
 ;; Deletion
 (define-key uevil-normal-map "x"  'uevil-suppr)
 (define-key uevil-normal-map "X"  'uevil-suppr-before)
 (define-key uevil-normal-map "dd" 'uevil-delete-line)
 
 ;; Insert state
-(define-key uevil-insert-map (kbd "ESC") 'uevil-normal-state)
+(define-key uevil-insert-map (kbd "ESC")     'uevil-normal-state)
+(define-key uevil-insert-map (kbd "<right>") 'uevil-forward-char)
+(define-key uevil-insert-map (kbd "<left>")  'uevil-backward-char)
+(define-key uevil-insert-map (kbd "<down>")  'uevil-forward-line)
+(define-key uevil-insert-map (kbd "<up>")    'uevil-backward-line)
 
 ;;; Main function
 (define-minor-mode uevil-mode
