@@ -55,6 +55,7 @@
     (use-local-map uevil-normal-map)
     (read-only-mode)
     (setq uevil-insert-state-p nil)
+    (setq uevil-visual-state-p nil)
     (setq uevil-normal-state-p t)))
 
 ;; Insert state
@@ -65,6 +66,16 @@
     (read-only-mode -1)
     (use-local-map uevil-insert-map)
     (setq uevil-insert-state-p t)
+    (setq uevil-normal-state-p nil)))
+
+;; Visual state
+(defun uevil-visual-state ()
+  "Set up the uevil visual state."
+  (interactive)
+  (unless uevil-visual-state-p
+    (set-mark (point))
+    (use-local-map uevil-visual-map)
+    (setq uevil-visual-state-p t)
     (setq uevil-normal-state-p nil)))
 
 ;;; Utils:
@@ -192,6 +203,7 @@
 ;; Normal state
 ;  Switch states
 (define-key uevil-normal-map "i" 'uevil-insert-state)
+(define-key uevil-normal-map "v" 'uevil-visual-state)
 (define-key uevil-normal-map ":" 'uevil-ex)
 (define-key uevil-normal-map "a" 'uevil-append)
 (define-key uevil-normal-map "I" 'uevil-insert-beginning-line)
@@ -230,6 +242,9 @@
 (define-key uevil-insert-map (kbd "<left>")  'uevil-backward-char)
 (define-key uevil-insert-map (kbd "<down>")  'uevil-forward-line)
 (define-key uevil-insert-map (kbd "<up>")    'uevil-backward-line)
+
+;; Visual state
+(define-key uevil-visual-map (kbd "ESC") 'uevil-normal-state)
 
 ;;; Main function
 (define-minor-mode uevil-mode
