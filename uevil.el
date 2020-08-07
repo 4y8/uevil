@@ -237,14 +237,20 @@
 (define-key uevil-normal-map "dd" 'uevil-delete-line)
 
 ;; Insert state
-(define-key uevil-insert-map (kbd "ESC")     'uevil-normal-state)
 (define-key uevil-insert-map (kbd "<right>") 'uevil-forward-char)
 (define-key uevil-insert-map (kbd "<left>")  'uevil-backward-char)
 (define-key uevil-insert-map (kbd "<down>")  'uevil-forward-line)
 (define-key uevil-insert-map (kbd "<up>")    'uevil-backward-line)
+(define-key uevil-insert-map (kbd "<ESC>")   'uevil-normal-state)
 
 ;; Visual state
-(define-key uevil-visual-map (kbd "ESC") 'uevil-normal-state)
+(define-key uevil-visual-map (kbd "ESC") '(lambda ()
+                                            (interactive)
+                                            (deactivate-mark)
+                                            (uevil-normal-state)))
+(define-key uevil-visual-map "d" 'kill-region)
+(define-key uevil-visual-map "x" 'kill-region)
+(define-key uevil-visual-map "y" 'copy-region-as-kill)
 
 ;;; Main function
 (define-minor-mode uevil-mode
