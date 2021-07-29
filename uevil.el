@@ -1,14 +1,13 @@
 ;;; uevil.el --- a minimal implementation of vi emulation in emacs -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 Yul3n
+;; Copyright (C) 2020-2021 ayb
 ;;
-;; Author: Yul3n <http://github/Yul3n>
-;; Maintainer: Yul3n <yul3n.falx@protonmail.com>
+;; Author: ayb <ayb@3hg.fr>
+;; Maintainer: ayb <ayb@3hg.fr>
 ;; Created: August 01, 2020
-;; Modified: August 01, 2020
 ;; Version: 0.0.1
 ;; Keywords:
-;; Homepage: https://github.com/Yul3n/uevil
+;; Homepage: https://github.com/4y8/uevil
 ;; Package-Requires: ((emacs 26.3) (cl-lib "0.5"))
 ;;
 ;; This file is not part of GNU Emacs.
@@ -53,7 +52,6 @@
   (interactive)
   (unless uevil-normal-state-p
     (use-local-map uevil-normal-map)
-    (read-only-mode)
     (setq uevil-insert-state-p nil)
     (setq uevil-visual-state-p nil)
     (setq uevil-normal-state-p t)))
@@ -63,7 +61,6 @@
   "Set up the uevil insert state."
   (interactive)
   (unless uevil-insert-state-p
-    (read-only-mode -1)
     (use-local-map uevil-insert-map)
     (setq uevil-insert-state-p t)
     (setq uevil-normal-state-p nil)))
@@ -241,7 +238,7 @@
 (define-key uevil-insert-map (kbd "<left>")  'uevil-backward-char)
 (define-key uevil-insert-map (kbd "<down>")  'uevil-forward-line)
 (define-key uevil-insert-map (kbd "<up>")    'uevil-backward-line)
-(define-key uevil-insert-map (kbd "<ESC>")   'uevil-normal-state)
+(define-key uevil-insert-map (kbd "ESC")   'uevil-normal-state)
 
 ;; Visual state
 (define-key uevil-visual-map (kbd "ESC") '(lambda ()
